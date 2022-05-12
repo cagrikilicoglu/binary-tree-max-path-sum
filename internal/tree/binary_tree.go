@@ -104,11 +104,17 @@ func PathSum(n *Node, maxSum *int) int {
 	}
 	left := PathSum(n.Left, maxSum)
 	right := PathSum(n.Right, maxSum)
-
-	currentMax := max(n.Value, max(n.Value+right, n.Value+left))
-	*maxSum = max(*maxSum, max(n.Value+right+left, currentMax))
-	log.Println(n.Value)
-	log.Println(*maxSum)
+	var currentMax int
+	// to prevent integer overlow
+	if n.Value < 0 && (right == math.MinInt || left == math.MinInt) {
+		currentMax = n.Value
+		*maxSum = max(*maxSum, currentMax)
+	} else {
+		currentMax = max(n.Value, max(n.Value+right, n.Value+left))
+		*maxSum = max(*maxSum, max(n.Value+right+left, currentMax))
+	}
+	log.Println("val", n.Value)
+	log.Println("max", *maxSum)
 	return currentMax
 
 }
