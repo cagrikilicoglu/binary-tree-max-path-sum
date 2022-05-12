@@ -1,0 +1,10 @@
+ServerConfig:
+  AppVersion: 1.0.0
+  Mode: Development
+  RoutePrefix: /api/v1/binary-tree
+  Debug: false
+  Port: 8090
+  TimeoutSecs: 60
+  ReadTimeoutSecs: 60
+  WriteTimeoutSecs: 12
+  ShutdownTimeoutSecs: 15

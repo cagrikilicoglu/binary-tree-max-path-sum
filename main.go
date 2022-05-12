@@ -2,7 +2,14 @@ package main
 
 import (
 	"binary-tree-max-path-sum/internal/tree"
+	"binary-tree-max-path-sum/pkg/config"
+	"binary-tree-max-path-sum/pkg/graceful"
 	"fmt"
+	"log"
+	"net/http"
+	"time"
+
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
@@ -66,4 +73,27 @@ func main() {
 	fmt.Println(*myBinaryTree2.Root.Left.Left.Right)
 	fmt.Println(*myBinaryTree2.Root.Left.Left.Left)
 	fmt.Println(tree.MaxSum(myBinaryTree2.Root))
+}
+
+func Execute() {
+	// Load configuration depending on app environment
+	configFile := fmt.Sprintf("./pkg/config/%s", "local")
+	cfg, err := config.LoadConfig(configFile)
+	if err != nil {
+		log.Fatalf("Loadconfig failed, %v", err)
+	}
+
+	router := gin.Default()
+	srv := &http.Server{
+		Addr:         fmt.Sprintf(":%d", cfg.ServerConfig.Port),
+		ReadTimeout:  time.Duration(int64(cfg.ServerConfig.ReadTimeoutSecs) * int64(time.Second)),
+		WriteTimeout: time.Duration(int64(cfg.ServerConfig.WriteTimeoutSecs) * int64(time.Second)),
+		Handler:      router,
+	}
+	go func() {
+		if err := srv.ListenAndServe(); err != nil {
+			log.Println(err)
+		}
+	}()
+	graceful.Shutdown(srv, time.Duration(int64(cfg.ServerConfig.ShutdownTimeoutSecs)*int64(time.Second)))
 }
