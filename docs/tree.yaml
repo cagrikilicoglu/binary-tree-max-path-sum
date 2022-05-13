@@ -1,0 +1,83 @@
+swagger: "2.0"
+info:
+  description: "This is a binary tree maximum path sum calculator server."
+  version: "1.0.0"
+  title: "Swagger Binary-Tree"
+  termsOfService: "http://swagger.io/terms/"
+  contact:
+    email: "mcagrikilicoglu@gmail.com"
+  license:
+    name: "MIT"
+    url: "http://opensource.org/licenses/MIT"
+basePath: "/api/v1/binary-tree"
+tags:
+  - name: "Tree"
+    description: "All tree operations"
+
+schemes:
+  - "https"
+  - "http"
+
+paths:
+  /max-path-sum/:
+    post:
+      tags:
+        - "Tree"
+      summary: "Calculate max path sum"
+      description: ""
+      operationId: "calculateMaxSum"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Tree object of which to calculate maximum path sum"
+          required: true
+          schema:
+            $ref: "#/definitions/Tree"
+      responses:
+        "200":
+          description: "Sum is successfully calculated"
+          schema:
+            $ref: "#/definitions/Result"
+        "405":
+          description: "Invalid input"
+definitions:
+  Request:
+    type: "object"
+    required:
+      - "tree"
+    properties:
+      tree:
+        type: "object"
+        $ref: "#/definitions/Tree"
+  Tree:
+    type: "object"
+    required:
+      - "nodes"
+      - "root"
+    properties:
+      nodes:
+        type: "array"
+        items:
+          $ref: "#/definitions/Node"
+      root:
+        type: "string"
+  Node:
+    type: "object"
+    required:
+      - "id"
+      - "value"
+    properties:
+      id:
+        type: "string"
+      left:
+        type: "string"
+      right:
+        type: "string"
+      value:
+        type: "integer"
+  Result:
+    type: "string"
