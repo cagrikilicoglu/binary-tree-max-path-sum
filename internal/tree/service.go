@@ -2,7 +2,6 @@ package tree
 
 import (
 	"binary-tree-max-path-sum/internal/api"
-	"log"
 	"math"
 )
 
@@ -24,21 +23,24 @@ func newNode() *Node {
 	return &Node{}
 }
 
-func ResponseToBinaryTree(t api.Tree) *Node {
+// CreateBinaryTree creates a BinaryTree entity from a given input binary tree in the form of json
+func CreateBinaryTree(t api.Tree) *Node {
 	tree := newBinaryTree()
 	list := []*Node{}
-
+	if len(t.Nodes) == 0 {
+		return nil
+	}
 	for i := range t.Nodes {
-		node := responseToNode(*t.Nodes[i])
+		node := inputToNode(*t.Nodes[i])
 		list = append(list, node)
 	}
 
 	for i := 0; i < len(t.Nodes); i++ {
 
-		if *t.Root == *t.Nodes[i].ID {
+		if t.Root == *t.Nodes[i].ID {
 			tree.Root = list[i]
-			log.Println("root in if", tree.Root)
 		}
+
 		for j := i + 1; j < len(t.Nodes); j++ {
 			if t.Nodes[i].Right == *t.Nodes[j].ID {
 				list[i].Right = list[j]
@@ -46,22 +48,22 @@ func ResponseToBinaryTree(t api.Tree) *Node {
 			if t.Nodes[i].Left == *t.Nodes[j].ID {
 				list[i].Left = list[j]
 			}
-
 		}
 	}
 	return tree.Root
 }
 
-// func responseToNode(nr NodeResponse) *Node {
-// 	node := newNode()
-// 	node.Value = nr.Value
-// 	return node
-// }
+// MaxSum calculates the maximum sum of all paths of a binary tree
 func MaxSum(n *Node) int {
+	if n == nil {
+		return 0
+	}
 	maxSum := math.MinInt
 	PathSum(n, &maxSum)
 	return maxSum
 }
+
+// PathSum calculates the maximum sum of paths passing through each node recursively
 func PathSum(n *Node, maxSum *int) int {
 
 	if n == nil {
@@ -72,13 +74,11 @@ func PathSum(n *Node, maxSum *int) int {
 	right := PathSum(n.Right, maxSum)
 	var currentMax int
 
-	// to prevent integer overlow
+	// to prevent integer overlow when the value is negative
 	if n.Value < 0 && (right == math.MinInt || left == math.MinInt) {
-
 		currentMax = n.Value
 		*maxSum = max(*maxSum, currentMax)
 	} else {
-
 		currentMax = max(n.Value, max(n.Value+right, n.Value+left))
 		*maxSum = max(*maxSum, max(n.Value+right+left, currentMax))
 	}
@@ -86,6 +86,8 @@ func PathSum(n *Node, maxSum *int) int {
 	return currentMax
 
 }
+
+// max calculates the maximum value of two given inputs
 func max(a, b int) int {
 	if a > b {
 		return a
@@ -93,27 +95,9 @@ func max(a, b int) int {
 	return b
 }
 
-// var tree = BinaryTree{}
-
-// func responseToNode
-
-// func responseToBinaryTree(br BinaryTreeResponse) *Node {
-// currentNode = responseToNode(br.Nodes[0])
-
-// if len(br.Nodes) == 0 {
-// 	return nil
-// }
-
-// br.Nodes = br.Nodes[1:]
-// currentNode.right = responseToBinaryTree
-
-// for i := range br.Nodes {
-// 	node := newNode()
-// 	node.value = br.Nodes[i].Value
-// 	if br.Nodes[i].Id == br.root {
-
-// 	}
-// }
-// return constructNodes(br.Nodes)
-
-// }
+// inputToNode creates a node entity from given input noed in the form of json and sets its value to input node value
+func inputToNode(an api.Node) *Node {
+	node := newNode()
+	node.Value = int(*an.Value)
+	return node
+}

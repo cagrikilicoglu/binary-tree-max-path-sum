@@ -25,8 +25,7 @@ type Tree struct {
 	Nodes []*Node `json:"nodes"`
 
 	// root
-	// Required: true
-	Root *string `json:"root"`
+	Root string `json:"root,omitempty"`
 }
 
 // Validate validates this tree
@@ -34,10 +33,6 @@ func (m *Tree) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateNodes(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validateRoot(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -69,15 +64,6 @@ func (m *Tree) validateNodes(formats strfmt.Registry) error {
 			}
 		}
 
-	}
-
-	return nil
-}
-
-func (m *Tree) validateRoot(formats strfmt.Registry) error {
-
-	if err := validate.Required("root", "body", m.Root); err != nil {
-		return err
 	}
 
 	return nil

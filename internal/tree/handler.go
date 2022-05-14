@@ -2,7 +2,7 @@ package tree
 
 import (
 	"binary-tree-max-path-sum/internal/api"
-	"log"
+	"errors"
 	"net/http"
 	"strconv"
 
@@ -10,32 +10,34 @@ import (
 	"github.com/go-openapi/strfmt"
 )
 
-type TreeHandler struct {
-}
-
 func NewTreeHandler(r *gin.RouterGroup) {
-	h := &TreeHandler{}
-	r.POST("/max-path-sum", h.calculateMaxPathSum)
+	r.POST("/max-path-sum", calculateMaxPathSum)
 }
 
-func (t *TreeHandler) calculateMaxPathSum(c *gin.Context) {
+// calculateMaxPathSum calculates the maximum path sum of a given binary tree
+func calculateMaxPathSum(c *gin.Context) {
 	requestBody := &api.Request{}
 
 	if err := c.Bind(&requestBody); err != nil {
-		c.Header("code", strconv.Itoa(http.StatusBadRequest)) //TODO
-		c.JSON(http.StatusBadRequest, err)
+
+		respondWithJSON(c, http.StatusBadRequest, ("Request body cannot be binded"))
+		return
 	}
 
 	if err := requestBody.Validate(strfmt.NewFormats()); err != nil {
-		c.Header("code", strconv.Itoa(http.StatusForbidden)) //TODO
-		c.JSON(http.StatusBadRequest, err)
+
+		respondWithJSON(c, http.StatusForbidden, errors.New("Request body is not valid"))
+		return
 	}
-	log.Println(*requestBody.Tree)
-	root := ResponseToBinaryTree(*requestBody.Tree)
-	log.Println(root)
+
+	root := CreateBinaryTree(*requestBody.Tree)
 	result := MaxSum(root)
+	respondWithJSON(c, http.StatusOK, result)
 
-	c.Header("code", strconv.Itoa(http.StatusOK))
-	c.JSON(http.StatusOK, result)
+}
 
+// respondWithJSON creates a structured response for http request
+func respondWithJSON(c *gin.Context, code int, payload interface{}) {
+	c.Header("code", strconv.Itoa(code))
+	c.JSON(code, payload)
 }
