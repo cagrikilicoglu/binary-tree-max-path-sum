@@ -26,29 +26,29 @@ func newNode() *Node {
 // CreateBinaryTree creates a BinaryTree entity from a given input binary tree in the form of json
 func CreateBinaryTree(t api.Tree) *Node {
 	tree := newBinaryTree()
-	list := []*Node{}
+	list := make(map[string]*Node)
 	if len(t.Nodes) == 0 {
 		return nil
 	}
+
 	for i := range t.Nodes {
 		node := inputToNode(*t.Nodes[i])
-		list = append(list, node)
+		list[*t.Nodes[i].ID] = node
 	}
 
 	for i := 0; i < len(t.Nodes); i++ {
 
 		if t.Root == *t.Nodes[i].ID {
-			tree.Root = list[i]
+			tree.Root = list[*t.Nodes[i].ID]
 		}
 
-		for j := i + 1; j < len(t.Nodes); j++ {
-			if t.Nodes[i].Right == *t.Nodes[j].ID {
-				list[i].Right = list[j]
-			}
-			if t.Nodes[i].Left == *t.Nodes[j].ID {
-				list[i].Left = list[j]
-			}
+		if list[t.Nodes[i].Right] != nil {
+			list[*t.Nodes[i].ID].Right = list[t.Nodes[i].Right]
 		}
+		if list[t.Nodes[i].Left] != nil {
+			list[*t.Nodes[i].ID].Left = list[t.Nodes[i].Left]
+		}
+
 	}
 	return tree.Root
 }
