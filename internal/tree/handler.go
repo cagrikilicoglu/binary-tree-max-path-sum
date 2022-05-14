@@ -2,7 +2,6 @@ package tree
 
 import (
 	"binary-tree-max-path-sum/internal/api"
-	"errors"
 	"net/http"
 	"strconv"
 
@@ -20,13 +19,13 @@ func calculateMaxPathSum(c *gin.Context) {
 
 	if err := c.Bind(&requestBody); err != nil {
 
-		respondWithJSON(c, http.StatusBadRequest, ("Request body cannot be binded"))
+		respondWithJSON(c, http.StatusBadRequest, "Request body cannot be binded")
 		return
 	}
 
 	if err := requestBody.Validate(strfmt.NewFormats()); err != nil {
 
-		respondWithJSON(c, http.StatusForbidden, errors.New("Request body is not valid"))
+		respondWithJSON(c, http.StatusForbidden, "Request body is not valid")
 		return
 	}
 
